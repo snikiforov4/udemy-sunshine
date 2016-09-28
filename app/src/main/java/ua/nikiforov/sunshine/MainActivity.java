@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                new FetchWeatherTask().execute();
+                new FetchWeatherTask().execute("94043");
         }
         return true;
     }

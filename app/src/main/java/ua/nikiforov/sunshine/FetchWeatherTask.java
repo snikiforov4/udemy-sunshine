@@ -1,5 +1,6 @@
 package ua.nikiforov.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -13,12 +14,15 @@ import java.net.URL;
 /**
  * @author snikiforov
  */
-public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private static final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    private static final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
+
+
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Void doInBackground(String... params) {
 //        checkNotNull(params, "param");
 //        checkArgument(params.length == 1, "wrong params size");
         // These two need to be declared outside the try/catch
@@ -33,8 +37,16 @@ public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are available at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
-
+            Uri uri = Uri.parse(FORECAST_BASE_URL)
+                    .buildUpon()
+                    .appendQueryParameter("mode", "json")
+                    .appendQueryParameter("q", params[0])
+                    .appendQueryParameter("units", "metrics")
+                    .appendQueryParameter("cnt", "7")
+                    .appendQueryParameter("APPID", "158b4bc53e61603b88d2d7c203901ccf")
+                    .build();
+            URL url = new URL(uri.toString());
+            Log.d(LOG_TAG, "URL: " + url.toString());
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
@@ -60,6 +72,7 @@ public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
                 return null;
             }
             forecastJsonStr = buffer.toString();
+            Log.d(LOG_TAG, "Received response from WeatherService: " + forecastJsonStr);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             return null;
