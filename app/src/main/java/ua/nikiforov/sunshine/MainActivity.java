@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 
@@ -28,9 +31,16 @@ public class MainActivity extends AppCompatActivity {
                 "Sun 6/29 - Sunny - 20/7"
         );
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.list_item_forecast, R.id.list_item_forecast_textview, weakForecast);
-        ListView forecastListView = (ListView)findViewById(R.id.listview_forecast);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.list_item_forecast, R.id.list_item_forecast_textview, weakForecast);
+        final ListView forecastListView = (ListView)findViewById(R.id.listview_forecast);
         forecastListView.setAdapter(arrayAdapter);
+
+        forecastListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MainActivity.this, arrayAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -43,8 +53,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                new FetchWeatherTask().execute("94043");
+                new FetchWeatherTask(this).execute("94043");
         }
         return true;
     }
+
 }
